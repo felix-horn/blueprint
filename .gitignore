@@ -1,0 +1,14 @@
+# "Weirdnes von MacOS, die man nicht mitcommiten möchte."
+.DS_Store
+
+# In den dist Ornder wird das Transpilat geschrieben - egal ob durch Bundler gebundetl (z.B. webpack)
+# oder als einzelne Dateien durch `tsc` (typescript command) 
+dist
+
+# In diesen Ordner werden alle Dependencies (und deren Dependencies) aufgelöst.
+# Bei einer neuen Nutzerin des Repos würde diese Datei dann lokal durch `yarn inst` erstellt werden.
+# Um die öffentliche NPM JS Regestry als Source of Truth zu haben, wird dies nicht mitcommited.
+node_modules
+
+# Eindeutige Benennung, da .env teilweise doch mitcommited wird - nicht eindeutig.
+secrets.txt
