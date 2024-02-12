@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { render } from 'react-dom';
 
-// eslint-disable-next-line no-console
 console.log('Hello World');
 
 export type Foo = {
