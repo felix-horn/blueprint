@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { render } from 'react-dom';
 
-console.log('Hello World');
+// console.log('Hello World');
 
 export type Foo = {
   bar: string;
@@ -9,4 +9,4 @@ export type Foo = {
 
 const Component: FC<Foo> = ({ bar }) => <h1>{bar}</h1>;
 
-render(<Component bar="hello world" />, document.body);
+render(<Component bar="hello lennart NICE" />, document.body);

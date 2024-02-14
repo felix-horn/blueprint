@@ -1,0 +1,46 @@
+## CI: checks that everything is okay
+## CD: deploys
+name: 'Continuous integration / Continuous delivery'
+on:
+  push:
+  ## push from any branches
+    branches: ['**']
+  release:
+    types: [published]
+
+jobs:
+  ci:
+    name: 'Continuous Integration'
+    ## always runs (on feature branch and on main ) unless commit message contains "ci skip"
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]')}}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Git checkout
+      ## "actions" are pre-defined on GitHub
+      ## checks out the current code
+        uses: actions/checkout@v3
+
+      ## node can be imagined like Chrome without Chrome, it understands JS, more specific: it's a server-side runtime built on top of V8 (JS engine from Chrome)
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          ## by default caching is turned off, we want to cache because otherwise every run of the pipeline would need to donwload all dependecies again
+          ## at the beginning ubuntu is completely empty
+          ## wir cashen die node_modules
+          cache: 'npm'
+
+      - name: Install dependencies
+      ## npm ci (bild in in npm) would just use the versions from package-lock.json, if package-lock doesn't exist, it would fail by design
+      ## npm install would undermine this logic: makes sure, sure to install all versions from package.json in case the package-lock has a different version
+        run: npm ci
+
+      - name: Run linter (linting + formatting)
+        run: npm run lint:check
+
+      - name: Check TypeScript
+        run: npm run ts:check
+
+      - name: Build
+        run: npm run build

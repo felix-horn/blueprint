@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "WEBPACK_CLI_FORCE_LOAD_ESM_CONFIG=true webpack",
+    "serve": "WEBPACK_CLI_FORCE_LOAD_ESM_CONFIG=true webpack serve",
+    "lint:check": "eslint --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",
+    "lint:fix": "eslint --fix --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",
+    "ts:check": "tsc"
   },
   "repository": {
     "type": "git",
@@ -25,9 +29,12 @@
     "@types/eslint": "^8.56.2",
     "@types/react": "^18.2.51",
     "@types/react-dom": "^18.2.18",
+    "@types/webpack": "^5.28.5",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
     "@typescript-eslint/types": "^6.20.0",
+    "css-loader": "^6.10.0",
+    "css-minimizer-webpack-plugin": "^6.0.0",
     "eslint": "^8.56.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
@@ -35,13 +42,19 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unicorn": "^50.0.1",
+    "html-webpack-plugin": "^5.6.0",
     "husky": "^9.0.7",
     "jest": "^29.7.0",
+    "mini-css-extract-plugin": "^2.8.0",
     "nodemon": "^3.0.3",
     "prettier": "^3.2.4",
     "sort-package-json": "^2.7.0",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3,"
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.0"
   },
   "dependencies": {
     "react": "^18.2.0",
