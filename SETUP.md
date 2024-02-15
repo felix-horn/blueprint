@@ -77,10 +77,10 @@
     - A config for markdown files would need dedicated extension and separate config file.
 
 1. Add `tsconfig.json` configuration which is used by `$ tsc` and VS Code.
-    - Configers `noEmit: true` which is later overwritten in `tsconfig.build.json`. (s. below)
+    - Configers `noEmit: true` which is overwritten in `tsconfig.build.json`. (s. below) `$ tsc` does a type check and transpiles TS. `noEmit: true` turns off the transpilation part. Therefore, `$ tsc` can be used for the `ts:check` script in the `package.json`. (Alternatively the `ts:check` script could be written as `"tsc --noEmit`. This flag can be found with `$ npm exec -- tsc --help`. `--` means everything )
     - As opposed to a joint linting and formatting config (`eslint.config.js`), two separate configs for linting errors (e.g. no console log) and transpilation errors (TS errors) (e.g. object with key without values) does makes sense: TS errors would make it impossible to transpile while lint errors wouldn't.
 
-1. Add `tsconfig.build.json` is used in webpack, configures `noEmit: false` and excludes unit test files and doesn't build them.
+1. Add `tsconfig.build.json` is used in webpack, configures `noEmit: false` in order to switch the transpilation back on, which was turned of in the `tsconfig.json`, and excludes unit test files from the build.
 
 1. Add `tsconfig.meta.json` to type check config files ("and making me better than most devs" Quote Lennar :)
 
@@ -157,9 +157,7 @@
               End of `serve` script.
 
       - How does the browser get it?
-          1. User typ
-          
-          es "example.com" into browser.
+          1. User types "example.com" into browser.
           2. Browser asks OS what IP adress does "example.com" have?
           3. OS does DNS stuff.
           4. Browser sends http request to IP address (e.g. 192.168.0.1) with path `/`.
@@ -169,18 +167,21 @@
           8. Browser sends http request to IP address 192.168.0.1 with path `/[name].[contenthash].js` and `/main.css`.
           9. Browser creates html out of JS file.
 
-  1. Create CI
+1. Create CI
 
-      - create folders and file
-      - write scripts
-          - lint:check
-              - how to know what to write
-                  - node_modules > .bin > eslint 
-                  - "lint:check": "eslint --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" ."
-                      - `.` is entry point, not src because also want to check config files with the coresponding lint configs
+      - Create folders `.github` and `workflows`.
+      - Create `pipeline.ylm.
+      - Copy content from Lennart and delete unncessary parts.
+      - Write necessary scripts in `package.json`.
+          - `"lint:check": "eslint --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",`
+              - `node_modules` > `eslint` > `package.json` > `bin` > `eslint`
+              - The `--ignore-pattern` flag can be found with `$ npm exec -- eslint --help`.
+              - REGEX means to ignore everything in `dist` and `node_modules` folders (with escaped `"`).
+              - Root (`.`) is entry point, not src because also want to check config files with the coresponding lint configs (`[configMeta, config]`).
+          - `"lint:fix": "eslint --fix --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",`
+              - Like `lint:check` but with `--fix` flag: "Automatically fix problems".
+          - `"ts:check": "tsc"`
+              - Without `--noEmit` flag, as this was turned off in `tsconfig.json` with `"noEmit": true`.
 
 - Does the github pipeline use the same config files which are used locally?
-
-ctrl u
-ctrl r
-ctrl g
+- `--`
