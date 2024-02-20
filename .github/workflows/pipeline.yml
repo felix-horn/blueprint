@@ -36,6 +36,9 @@ jobs:
       ## npm install would undermine this logic: makes sure, sure to install all versions from package.json in case the package-lock has a different version
         run: npm ci
 
+      - name: Check Commit Message
+        run: npm run lint:commit
+
       - name: Run linter (linting + formatting)
         run: npm run lint:check
 

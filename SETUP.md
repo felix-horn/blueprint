@@ -38,19 +38,16 @@
 1. Add `"type": "module",` to package.json, in order to use ECMAScript modules for imports and exports (instead of the default "require").
 
 1. Install the (dev) dependencies:
-    - `@commitlint`: linting git commit messages ("@" demoninates a name space which organzes several packages, but still every package works independently.)
-    - `@jest`, `jest`, `ts-jest`: unit testing
-    - `@typescript-eslint`: A project, which can lint not only JS but also TS. ("@types" namespace: typ package for packages that aren't typed, e.g. "@types/esling" is a type package for eslint.)
-    - `eslint`: ECMAScript linting
-    - `husky`: set up for git hooks ("Automatically lint your commit messages, code, and run tests upon committing or pushing.")
-    - `eslint-plugin-react-hooks`: will handle react hook adjecent errors
-    - `eslint-plugin-unicorn`: very strict linting rules?
+
     - `react` & `react-dom` are needed during runtime and therefore it's not a devDependency.
-    - `webpack` and `@types/webpack` are needed for later setup of webpack.
-    1. Install correct dependecy versions to `depedencies` or `devDependencies` in `package.json` (Dev dependencies are mostly used for tooling and won't be installed, if a package itself functions as a dependency.): `$ npm install --save-dev @commitlint/cli @commitlint/config-conventional ...` (version "^" means the latest minor and patch version so that a npm update won't (shouldn't) cause any problems (as opposed to "version: latest")
+
+    1. Install correct dependecy versions to `depedencies` or `devDependencies` in `package.json`
+       - Dev dependencies are mostly used for tooling and won't be installed if a package itself functions as a dependency.
+       - `$ npm install --save-dev @commitlint/cli @commitlint/config-conventional ...`
+       - Version "^" means the latest minor and patch version so that a npm update won't (shouldn't) cause any problems (as opposed to "version: latest").
     2. `package-lock.json` and `node_modules` folder will be created outmatically.
-    - `package-lock`: like `package.json` but with all sub-dependencies and their specific versions. As this file will be committed, other devs who check out this repo will know exactly, which versions of each package I used. NEVER git-ignore it. Only idiots would do that.
-    - `node_modlues`: includes actual code of all (sub-)dependencies, which is used locall and bundled by webpack for example.
+      - `package-lock`: like `package.json` but with all sub-dependencies and their specific versions. As this file will be committed, other devs who check out this repo will know exactly, which versions of each package I used. NEVER git-ignore it. Only idiots would do that.
+      - `node_modlues`: includes actual code of all (sub-)dependencies, which is used locall and bundled by webpack for example.
 
 1. Add `.editorconfig` as formatting config for
     1. all file types (while e.g. eslint is just for typescript), and
@@ -70,19 +67,41 @@
     - prettier could of course also be used directly by VS Code and not via ESLint. However, then two separate configs need to be created and maintained. If don't incorrectly, those could contradict each other. Using prettier via ESLint makes it possible to just have one config file (`eslint.config.js`).
     - Therefore:
 
-1. Add `eslint.config.js` as configuration for ESLint (and prettier).
+1. Set Up Linting and Formatting
 
-    - As ESLint uses the flat config file, the exported defaults (configMeta and config) are used without specifically importing them.
-    - The old format was `.eslintrc` or `.eslintrc.js` but with `"eslint.experimental.useFlatConfig": true,` in the `.vscode/settings.json` VS Code is configured to use the new (flat) format.
-    - A config for markdown files would need dedicated extension and separate config file.
+    - Install dev dependencies:
+      - `@commitlint`: linting git commit messages ("@" demoninates a name space which organzes several packages, but still every package works independently.)
+        - "@commitlint/cli": command line interface for commitlint
+        - "@commitlint/config-conventional": preset for config to lint the commit message in terminal e.g. "feat (s.th.): fix this thing"
+        - "@commitlint/types": types to use with JSDoc syntax
+      - `husky`: set up for git hooks (not "react hook"!! but validation which "hook" themselves into git) ("Automatically lint your commit messages, code, and run tests upon committing or pushing.")
+      - `eslint`: ECMAScript linting
+      - `eslint-plugin-react-hooks`: will handle react hook adjecent errors
+      - `eslint-plugin-unicorn`: very strict linting rules
 
-1. Add `tsconfig.json` configuration which is used by `$ tsc` and VS Code.
-    - Configers `noEmit: true` which is overwritten in `tsconfig.build.json`. (s. below) `$ tsc` does a type check and transpiles TS. `noEmit: true` turns off the transpilation part. Therefore, `$ tsc` can be used for the `ts:check` script in the `package.json`. (Alternatively the `ts:check` script could be written as `"tsc --noEmit`. This flag can be found with `$ npm exec -- tsc --help`. `--` means everything )
-    - As opposed to a joint linting and formatting config (`eslint.config.js`), two separate configs for linting errors (e.g. no console log) and transpilation errors (TS errors) (e.g. object with key without values) does makes sense: TS errors would make it impossible to transpile while lint errors wouldn't.
+    - Add `eslint.config.js` as configuration for ESLint (and prettier).
+      - As ESLint uses the flat config file, the exported defaults (configMeta and config) are used without specifically importing them.
+      - The old format was `.eslintrc` or `.eslintrc.js` but with `"eslint.experimental.useFlatConfig": true,` in the `.vscode/settings.json` VS Code is configured to use the new (flat) format.
+      - A config for markdown files would need dedicated extension and separate config file.
 
-1. Add `tsconfig.build.json` is used in webpack, configures `noEmit: false` in order to switch the transpilation back on, which was turned of in the `tsconfig.json`, and excludes unit test files from the build.
+    - Add `commitlint.congig.mjs`:
+      - `mjs` file: ECMAScript module js as commitlint starts node.js in a way that causes it to read .js files as common.js modules (instead of ECMAScript modules) even though it's defined in `package.json` (`type: module`) otherwise.
 
-1. Add `tsconfig.meta.json` to type check config files ("and making me better than most devs" Quote Lennar :)
+    - Add `lint:commit` script, which is used in CI, in order to check whether the latest added commit has a valid commit message. "Latest" is determined by checked the commit message from the the second to last to last git ref. This is necessary to make sure that no invalid commit message stays unnoticed, even in cases where the developer has disabled local git hooks (`$git --no-verify`).
+
+    - Add `commit-msg` file in `.husky` folder.
+    - Add npm script `setup:git-hooks`.
+    - Every dev who checks out this repo needs to run this setup script in oder to install husky with the same commit config as used above for commitlint.
+
+1. Set Up TypeScript
+
+    - Install dev dependency:
+      - `@typescript-eslint`: A project, which can lint not only JS but also TS. ("@types" namespace: typ package for packages that aren't typed, e.g. "@types/esling" is a type package for eslint.)
+    - Add `tsconfig.json` configuration which is used by `$ tsc` and VS Code.
+        - Configers `noEmit: true` which is overwritten in `tsconfig.build.json`. (s. below) `$ tsc` does a type check and transpiles TS. `noEmit: true` turns off the transpilation part. Therefore, `$ tsc` can be used for the `ts:check` script in the `package.json`. (Alternatively the `ts:check` script could be written as `"tsc --noEmit`. This flag can be found with `$ npm exec -- tsc --help`. `--`: npm also has flags. In order to differentiate the `--` denotes everything after the comand is an input for it (in this case `tsc`).)
+        - As opposed to a joint linting and formatting config (`eslint.config.js`), two separate configs for linting errors (e.g. no console log) and transpilation errors (TS errors) (e.g. object with key without values) does makes sense: TS errors would make it impossible to transpile while lint errors wouldn't.
+    - Add `tsconfig.build.json` which is later used in webpack. Configures `noEmit: false` in order to switch the transpilation back on, which was turned of in the `tsconfig.json`, and excludes unit test files from the build.
+    - Add `tsconfig.meta.json` to type check config files ("and making me better than most devs" Quote Lennar :)
 
 1. Add `src > main.ts` (also fixes error in `tsconfig.json`)
 
@@ -98,8 +117,9 @@
 
 1. Create `webpack.config.js` and copy&paste from Lennart's common repo.
 
-    - All relevant dependencies have already been installed above.
-
+    - Install dev dependencies:
+      - webpack`
+      -`@types/webpack` are needed for later setup of webpack.
       - `webpack-cli`: to use cli to interact with webpack (In order to keep core package of webpack small, it can be installed additionally to webpack if the user has a need for that. We need it as webpack needs it when executed. (Still don't get the use case that a user only needs webpack without webpack-cli then...))
       - `webpack-dev-server`: same as above
       - `html-webpack-plugin`: "rites updated file name (hash) of JS bundle (or other outputs) in script tag of html file (s. below).
@@ -112,7 +132,7 @@
         `@typedef` + `@type`: define type (In a TS file this would be: `export type XYZ = {...}`)
         `@type` (2nd one): assignment of type (In a TS file this would be: `const xyz: XYZ`)
 
-1. Write `build` script in `package.json`:
+1. Add `build` script to `package.json`:
 
     - `WEBPACK_CLI_FORCE_LOAD_ESM_CONFIG=true`
       - Is an environment variable (which exists on the shell level).
@@ -121,7 +141,7 @@
 
       - webpack
 
-1. Write `serve` script in `package.json`:
+1. Add `serve` script to `package.json`:
 
       - `serve` is an argument, not an environment variable as described above. That's why it's written after `webpack`.
       - How does `webpack serve` work as a command? How does the CLI and then npm know what to do with it?
@@ -171,8 +191,8 @@
 
       - Create folders `.github` and `workflows`.
       - Create `pipeline.ylm.
-      - Copy content from Lennart and delete unncessary parts.
-      - Write necessary scripts in `package.json`.
+      - Copy content from Lennart and delete unncessary parts. (Details in file.)
+      - Add scripts to `package.json`:
           - `"lint:check": "eslint --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",`
               - `node_modules` > `eslint` > `package.json` > `bin` > `eslint`
               - The `--ignore-pattern` flag can be found with `$ npm exec -- eslint --help`.
@@ -183,5 +203,21 @@
           - `"ts:check": "tsc"`
               - Without `--noEmit` flag, as this was turned off in `tsconfig.json` with `"noEmit": true`.
 
-- Does the github pipeline use the same config files which are used locally?
-- `--`
+1. Create Unit Testing
+
+    - Install dev dependencies:
+        - `jest`
+        - `@jest/globals`:
+        - `ts-jest`: types for jest
+    - Create `jest.config.js`. (details in file)
+    - Add scripts to `package.json`:
+        - `"test:unit": "jest ."`
+            - `.`: Why not `src`?
+
+1. Create End to End Testing
+
+    - Install dev denpendency:
+        - `cypress`
+    - Cypress config (`cypress.config.js`) is not needed as Cypress' default behavior is sufficient.
+
+- Difference commitlint and husky
