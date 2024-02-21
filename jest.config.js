@@ -1,21 +1,10 @@
-// const {} = import 'jest'
-
-// const {defaults} = require('jest-config');
-
-// Why not /** @type {import('jest').Config} */
-
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-
 export default {
-  // Why?
+  // enable resolution from js to tsx files in import
   moduleNameMapper: {
     '^(\\./.+)\\.m?jsx?$': '$1',
   },
-  // Not in documentation.
   passWithNoTests: true,
-  // No such folder on root level.
+  // module path to node_modules folder with presets for jest setup with TypeScript
   preset: 'ts-jest/presets/js-with-ts-esm',
-  roots: ['src'],
-  // `node` is default already.
-  testEnvironment: 'node',
 };
