@@ -10,9 +10,9 @@
     "lint:fix": "eslint --fix --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",
     "serve:e2e": "WEBPACK_CLI_FORCE_LOAD_ESM_CONFIG=true webpack serve --port 3001",
     "serve": "WEBPACK_CLI_FORCE_LOAD_ESM_CONFIG=true webpack serve",
-    "setup:git-hooks":"husky install",
+    "setup:git-hooks": "husky install",
     "test:e2e": "start-server-and-test serve:e2e http-get://localhost:3001 'cypress run'",
-    "test:unit": "jest .",
+    "test:unit": "jest src",
     "ts:check": "tsc"
   },
   "repository": {

@@ -1,18 +1,34 @@
 ## CI: checks that everything is okay
 ## CD: deploys
-name: 'Continuous integration / Continuous delivery'
+name: 'Continuous delivery'
 on:
-  push:
-  ## push from any branches
-    branches: ['**']
   release:
     types: [published]
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# Concurrency: Only one CD per group (we only have the group "pages") shall run at one moment.
+concurrency:
+  group: "pages"
+
+# Todo:
+# - no linting, type checking, etc. as this has already been done in CI; however,
+# - some parts of CI are needed again, as we start with an empty ubuntu, e.g.
+# - checkout
+# - node setup
+# - installing dependencies
+# - building
+
 jobs:
-  ci:
-    name: 'Continuous Integration'
-    ## always runs (on feature branch and on main ) unless commit message contains "ci skip"
-    if: ${{ !contains(github.event.head_commit.message, '[ci skip]')}}
+  # deploys.
+  cd:
+    name: 'Continuous Delivery'
+    needs: ci
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -36,14 +52,19 @@ jobs:
       ## npm install would undermine this logic: makes sure, sure to install all versions from package.json in case the package-lock has a different version
         run: npm ci
 
-      - name: Check Commit Message
-        run: npm run lint:commit
-
-      - name: Run linter (linting + formatting)
-        run: npm run lint:check
-
-      - name: Check TypeScript
-        run: npm run ts:check
-
       - name: Build
         run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # artifact = build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload everything webpack has built.
+          path: 'dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

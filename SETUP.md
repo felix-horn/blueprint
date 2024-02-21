@@ -207,12 +207,12 @@
 
     - Install dev dependencies:
         - `jest`
-        - `@jest/globals`:
+        - `@jest/globals`: for describe, expect, test
         - `ts-jest`: types for jest
     - Create `jest.config.js`. (details in file)
     - Add scripts to `package.json`:
-        - `"test:unit": "jest ."`
-            - `.`: Why not `src`?
+        - `"test:unit": "jest src"`
+            - `src`: Why not `src`?
 
 1. Create End to End Testing
 
@@ -220,4 +220,5 @@
         - `cypress`
     - Cypress config (`cypress.config.js`) is not needed as Cypress' default behavior is sufficient.
 
-- Difference commitlint and husky
+
+
