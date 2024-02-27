@@ -1,5 +1,9 @@
 import { styled } from 'styled-components';
 
+export type StyledLabelProps = {
+  hasNonValidInput?: boolean;
+};
+
 export const StyledHeadline = styled.h2`
   text-align: center;
 `;
@@ -13,10 +17,17 @@ export const StyledForm = styled.form`
   flex-wrap: wrap;
 `;
 
-export const StyledLabel = styled.label`
+export const StyledLabel = styled.label<StyledLabelProps>`
+  --has-non-valid-input: ${({ hasNonValidInput }) =>
+    hasNonValidInput ? 1 : 0};
+
+  /* color: var(--has-non-valid-input) ? 'red' : 'inherit'; */
+
   margin-top: 1rem;
   padding-inline: 15px;
   max-width: 100%;
+
+  color: ${({ hasNonValidInput }) => (hasNonValidInput ? 'red' : 'inherit')};
 
   @media (min-width: 576px) {
     /* flex: 0 0 50%; */
@@ -26,6 +37,10 @@ export const StyledLabel = styled.label`
 
 export const StyledInput = styled.input`
   width: 100%;
+`;
+
+export const StyledWarningText = styled.p`
+  color: red;
 `;
 
 export const StyledCentering = styled.div`
