@@ -1,0 +1,44 @@
+import { Meta, Canvas, Story } from '@storybook/addon-docs';
+import { Card } from './Card';
+
+<Meta title="Components/Card/Overview" component={Card} />
+
+# Base Card
+
+The base card component is used to display infromation for a single trimline, model, equipment option, etc.
+A base card always shows a title on top and has a CTA at its bottom. Also, by clicking anywhere on the card (but the CTA) the card can be selected.
+All other card content can be passed in as a child or as several children, which then are ordered vertically.
+
+Content can just be any text but card content components are additionally provided to structure content within a card.
+
+## Content Components
+
+- StyledCardLayout can be used to layout several card children in rows, columns or a grid.
+- TruncatedText can be used to line clamp longer text to only three line of text.
+- Price formats any number to a locale specific format.
+- Data Item structures and formats value, unit and label e.g. of technical data info.
+
+| Figma/Sketch                                                             | CI Portal | Status    |
+| ------------------------------------------------------------------------ | --------- | --------- |
+| [Download Audi Design Kit](./?path=/docs/getting-started-designer--page) | N/A       | Available |
+
+<br />
+
+<Canvas>
+  <Story id="components-card--default" />
+</Canvas>
+
+## Usage guidelines
+
+- Please use `theme.responsive.spacing.m` when placing multiple content cards
+  next to each other or below/above each other.
+
+### Best practices
+
+- Use the content card when having a dense or functional layout for example in
+  profile settings
+- Place multiple optional interactive elements as buttons on the card to guide
+  the user to a deeper level
+- Use horizontal swiping to make mobile navigation easier and take advantage of
+  the elevation of the card
+- The card itself is never clickable or selectable

@@ -1,8 +1,11 @@
-import { resolve } from 'node:path';
+import { resolve, sep } from 'node:path';
 
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { createTransformer } from 'typescript-plugin-styled-components';
+
+const styledComponentsTransformer = createTransformer();
 
 export const dirBase = process.cwd();
 
@@ -23,7 +26,7 @@ export default {
     static: [
       {
         directory: dirSrc,
-        publicPath: '/src',
+        publicPath: `${sep}src`,
       },
       {
         directory: dirStatic,
@@ -31,7 +34,7 @@ export default {
     ],
   },
   devtool: 'nosources-source-map',
-  entry: [resolve(dirSrc, 'main.tsx'), resolve(dirSrc, 'main.css')],
+  entry: resolve(dirSrc, 'main.tsx'),
   mode: 'production',
   module: {
     rules: [
@@ -43,6 +46,10 @@ export default {
             loader: 'ts-loader',
             options: {
               configFile: resolve(dirBase, 'tsconfig.build.json'),
+              // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+              getCustomTransformers: () => ({
+                before: [styledComponentsTransformer],
+              }),
             },
           },
         ],
@@ -68,7 +75,7 @@ export default {
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       // template: resolve(dirSrc, 'index.html'),
-      title: '@mrpelz/boilerplate-dom',
+      title: 'boilerplate-dom',
     }),
   ],
   resolve: {

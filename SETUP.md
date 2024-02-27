@@ -16,9 +16,9 @@
 
 1. `$ code .`
 
-1. Define `.gitignore` entries in editor.
+1. Define `.gitignore` entries in editor. (details in [.gitignore])
 
-1. `$ npm init` in order to create package.json. (yarn could be used alternatively but recently npm is as performant as yarn again.)
+1. `$ npm init` in order to create `package.json``. (yarn could be used alternatively but recently npm is as performant as yarn again.)
 
 1. Configure package.json:
     1. entry point: index.js
@@ -33,25 +33,23 @@
 
 1. Create `src` folder. (in VS Code or `$ mkdir src`)
 
-1. Create `dist` folder. (Grayed out in explorer > won't be commited to GitHub), the output of the build process goes here.
+1. Create `dist` folder. (Grayed out in explorer > won't be commited to GitHub). The output of the build process goes here.
 
-1. Add `"type": "module",` to package.json, in order to use ECMAScript modules for imports and exports (instead of the default "require").
+1. Add `"type": "module",` to `package.json`, in order to use ECMAScript modules for imports and exports (instead of the default "require").
 
-1. Install the (dev) dependencies:
+1. Install dependecy versions to `depedencies` or `devDependencies` in `package.json`.
 
     - `react` & `react-dom` are needed during runtime and therefore it's not a devDependency.
-
-    1. Install correct dependecy versions to `depedencies` or `devDependencies` in `package.json`
-       - Dev dependencies are mostly used for tooling and won't be installed if a package itself functions as a dependency.
-       - `$ npm install --save-dev @commitlint/cli @commitlint/config-conventional ...`
-       - Version "^" means the latest minor and patch version so that a npm update won't (shouldn't) cause any problems (as opposed to "version: latest").
-    2. `package-lock.json` and `node_modules` folder will be created outmatically.
+    - Dev dependencies are mostly used for tooling and won't be installed if a package itself functions as a dependency.
+    - `$ npm install --save-dev @commitlint/cli @commitlint/config-conventional ...`
+    - Version "^" means the latest minor and patch version so that a npm update won't (shouldn't) cause any problems (as opposed to "version: latest").
+    - `package-lock.json` and `node_modules` folder will be created autmatically with `$ npm install`.
       - `package-lock`: like `package.json` but with all sub-dependencies and their specific versions. As this file will be committed, other devs who check out this repo will know exactly, which versions of each package I used. NEVER git-ignore it. Only idiots would do that.
       - `node_modlues`: includes actual code of all (sub-)dependencies, which is used locall and bundled by webpack for example.
 
-1. Add `.editorconfig` as formatting config for
-    1. all file types (while e.g. eslint is just for typescript), and
-    2. any editor besides VS Code. (Even if I was planning not to use another editor than VS Code, in `.editorconfig` the basics for other devs who use other editors are shared. That's why it's not included in the `.vscode/settings` file, even though that would technically be possible.)
+1. Add `.editorconfig` as formatting config for ...
+    1. ... all file types (while e.g. eslint is just for typescript), and
+    2. ... any editor besides VS Code. (Even if I was planning not to use another editor than VS Code, in `.editorconfig` the basics for other devs who use other editors are shared. That's why it's not included in the `.vscode/settings` file, even though that would technically be possible.)
     - `root = true` > If another `.editorconfig` existed higher up in the folder structure, `root = true` means to NOT use anything above the root level of this project.
 
 1. Add `.vscode/extensions` will add recomendations to `Extensions > Recomendations`. (Again, has the basic setup for a shared repo in mind - just like `.editorconfig`.)
@@ -64,7 +62,7 @@
     - A prettier plugin for ESLint is installed (`package.json`) to be used not via VS Code but via ESLint.
     - config of prettier: not `.prettierrc` as in older projects but inline in `eslint.config.js`.
     - If `"editor.formatOnSave"` was `true`, VS Code would check, whether a plugin for formatting was available or else use the VS Code rules. As ESLint shall use the prettier plugin, this needs to be turned off.
-    - prettier could of course also be used directly by VS Code and not via ESLint. However, then two separate configs need to be created and maintained. If don't incorrectly, those could contradict each other. Using prettier via ESLint makes it possible to just have one config file (`eslint.config.js`).
+    - prettier could of course also be used directly by VS Code and not via ESLint. However, then two separate configs need to be created and maintained. If done incorrectly, those could contradict each other. Using prettier via ESLint makes it possible to just have one config file (`eslint.config.js`).
     - Therefore:
 
 1. Set Up Linting and Formatting
@@ -100,8 +98,9 @@
     - Add `tsconfig.json` configuration which is used by `$ tsc` and VS Code.
         - Configers `noEmit: true` which is overwritten in `tsconfig.build.json`. (s. below) `$ tsc` does a type check and transpiles TS. `noEmit: true` turns off the transpilation part. Therefore, `$ tsc` can be used for the `ts:check` script in the `package.json`. (Alternatively the `ts:check` script could be written as `"tsc --noEmit`. This flag can be found with `$ npm exec -- tsc --help`. `--`: npm also has flags. In order to differentiate the `--` denotes everything after the comand is an input for it (in this case `tsc`).)
         - As opposed to a joint linting and formatting config (`eslint.config.js`), two separate configs for linting errors (e.g. no console log) and transpilation errors (TS errors) (e.g. object with key without values) does makes sense: TS errors would make it impossible to transpile while lint errors wouldn't.
-    - Add `tsconfig.build.json` which is later used in webpack. Configures `noEmit: false` in order to switch the transpilation back on, which was turned of in the `tsconfig.json`, and excludes unit test files from the build.
-    - Add `tsconfig.meta.json` to type check config files ("and making me better than most devs" Quote Lennar :)
+    - Add `tsconfig.build.json` which is later used in webpack.
+        - Configures `noEmit: false` in order to switch the transpilation back on, which was turned of in the `tsconfig.json`, and excludes unit test files from the build.
+    - Add `tsconfig.meta.json` to type check config files ("and making me better than most devs" Quote Lennart :)
 
 1. Add `src > main.ts` (also fixes error in `tsconfig.json`)
 
@@ -118,7 +117,7 @@
 1. Create `webpack.config.js` and copy&paste from Lennart's common repo.
 
     - Install dev dependencies:
-      - webpack`
+      - `webpack`
       -`@types/webpack` are needed for later setup of webpack.
       - `webpack-cli`: to use cli to interact with webpack (In order to keep core package of webpack small, it can be installed additionally to webpack if the user has a need for that. We need it as webpack needs it when executed. (Still don't get the use case that a user only needs webpack without webpack-cli then...))
       - `webpack-dev-server`: same as above
@@ -131,6 +130,17 @@
 
         `@typedef` + `@type`: define type (In a TS file this would be: `export type XYZ = {...}`)
         `@type` (2nd one): assignment of type (In a TS file this would be: `const xyz: XYZ`)
+
+1. Do NOT install `babel`:
+
+    - As target transpilation with TS works better than babel.
+    - `tsconfig.json` > `target`: `ESNext` is sufficient as people should use "Evergreen Browsers" anyways.
+
+1. Add `typescript-plugin-styled-components`.
+
+    - Adds component name to class name.
+    - Basically the same as `babel-plugin-styled-components` but babel needs to be also installed for this to work.
+    - Add configuration to `webpack.json` as described here: <https://www.npmjs.com/package/typescript-plugin-styled-components#ts-loader>
 
 1. Add `build` script to `package.json`:
 
@@ -191,7 +201,7 @@
 
       - Create folders `.github` and `workflows`.
       - Create `pipeline.ylm.
-      - Copy content from Lennart and delete unncessary parts. (Details in file.)
+      - Copy content from Lennart and delete unncessary parts. (details in file.)
       - Add scripts to `package.json`:
           - `"lint:check": "eslint --ignore-pattern \"dist/**/*\" --ignore-pattern \"node_modules/**/*\" .",`
               - `node_modules` > `eslint` > `package.json` > `bin` > `eslint`
@@ -220,5 +230,8 @@
         - `cypress`
     - Cypress config (`cypress.config.js`) is not needed as Cypress' default behavior is sufficient.
 
+1. in order to not have "flash of unstyled content".
 
-
+<!-- export interface ComponentCommonProps<T extends HTMLElement = any> { -->
+    "noImplicitAny": false,
+  // '@typescript-eslint/no-explicit-any': 'warn',

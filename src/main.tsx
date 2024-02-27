@@ -1,12 +1,22 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { render } from 'react-dom';
+import { styled } from 'styled-components';
 
-// console.log('Hello World');
+import { GlobalStyle } from './global-styles.js';
+import { Form } from './signum-form.js';
 
-export type Foo = {
-  bar: string;
-};
+const StyledBackground = styled.div`
+  background: #f2f2f2;
+  padding: 20px;
+`;
 
-const Component: FC<Foo> = ({ bar }) => <h1>{bar}</h1>;
+const App: FC = () => (
+  <Fragment>
+    <GlobalStyle />
+    <StyledBackground>
+      <Form />
+    </StyledBackground>
+  </Fragment>
+);
 
-render(<Component bar="hello lennart NICE" />, document.body);
+render(<App />, document.body);
