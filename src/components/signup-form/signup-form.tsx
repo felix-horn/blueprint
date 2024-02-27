@@ -1,6 +1,16 @@
 /* eslint-disable no-console */
 import { ChangeEvent, FC, FormEvent, MouseEvent, useState } from 'react';
 
+import {
+  StyledButton,
+  StyledCentering,
+  StyledForm,
+  StyledHeadline,
+  StyledInput,
+  StyledLabel,
+  StyledSubHeadline,
+} from './signup-form.styles.js';
+
 export type InputValues = {
   email: string;
   name: string;
@@ -34,9 +44,19 @@ export const Form: FC = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          <input
+      <StyledHeadline>Jetzt JobRad-Fachhandelspartner werden!</StyledHeadline>
+      <StyledSubHeadline>
+        {/* @todo */}
+        <i>
+          <b>JobRad</b>
+          und
+          <b>JobRad für Selbstständige</b>
+          anbieten - ohne Abnahmeverpflichtung.
+        </i>
+      </StyledSubHeadline>
+      <StyledForm onSubmit={handleSubmit}>
+        <StyledLabel>
+          <StyledInput
             type="text"
             id="name"
             placeholder={PLACEHOLDER_TEXTS.name}
@@ -44,9 +64,9 @@ export const Form: FC = () => {
             onChange={handleChange}
             onBlur={() => console.log('blur')}
           />
-        </label>
-        <label>
-          <input
+        </StyledLabel>
+        <StyledLabel>
+          <StyledInput
             type="email"
             id="email"
             placeholder={PLACEHOLDER_TEXTS.email}
@@ -54,9 +74,9 @@ export const Form: FC = () => {
             onChange={handleChange}
             onBlur={() => console.log('blur')}
           />
-        </label>
-        <label>
-          <input
+        </StyledLabel>
+        <StyledLabel>
+          <StyledInput
             type="password"
             id="password"
             placeholder={PLACEHOLDER_TEXTS.password}
@@ -64,9 +84,11 @@ export const Form: FC = () => {
             onChange={handleChange}
             onBlur={() => console.log('blur')}
           />
-        </label>
-      </form>
-      <button onClick={handleSubmit}>Speichern</button>
+        </StyledLabel>
+      </StyledForm>
+      <StyledCentering>
+        <StyledButton onClick={handleSubmit}>Speichern</StyledButton>
+      </StyledCentering>
     </div>
   );
 };

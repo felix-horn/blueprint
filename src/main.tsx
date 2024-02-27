@@ -2,11 +2,11 @@ import { FC, Fragment } from 'react';
 import { render } from 'react-dom';
 import { styled } from 'styled-components';
 
+import { Form } from './components/signup-form/signup-form.js';
 import { GlobalStyle } from './global-styles.js';
-import { Form } from './signum-form.js';
 
 const StyledBackground = styled.div`
-  background: #f2f2f2;
+  background: #fff;
   padding: 20px;
 `;
 
