@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ChangeEvent, FC, FormEvent, MouseEvent, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 
 import {
   StyledButton,
@@ -11,6 +11,10 @@ import {
   StyledSubHeadline,
   StyledWarningText,
 } from './signup-form.styles.js';
+import {
+  TFieldValidationRule,
+  useFieldValidation,
+} from './use-field-validation.js';
 
 export type InputValues = {
   email: string;
@@ -38,15 +42,10 @@ export const WARNING_TEXTS = {
   isTooShort: 'Dein Passwort muss mindestens acht Zeichen haben.',
 };
 
-const handleSubmit = (
-  event: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>,
-) => {
+const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
   console.log(event);
 };
 
-const validateIsNotEmpty = (input: string) => input?.trim() !== '';
-// eslint-disable-next-line prettier/prettier
-const validateIsName = (input: string) => (/^[ A-Za-z]+$/).test(input);
 // eslint-disable-next-line prettier/prettier
 const validateIsEmail = (input: string) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(input);
 // eslint-disable-next-line prettier/prettier
@@ -58,6 +57,19 @@ const validateHasNumber = (input: string) => (/\d/).test(input);
 // eslint-disable-next-line prettier/prettier
 const validateIsLongEnough = (input: string) => input.length > 8;
 
+const ruleIsNotEmpty = {
+  validateInput: (input: string) => input?.trim() !== '',
+  validationMessage: WARNING_TEXTS.isEmpty,
+};
+
+const nameValidationRules: TFieldValidationRule[] = [
+  ruleIsNotEmpty,
+  {
+    validateInput: (input: string) => Boolean(input.match(/^[ A-Za-z]+$/)),
+    validationMessage: WARNING_TEXTS.isNoName,
+  },
+];
+// triggerd browser form submission
 
 export const Form: FC = () => {
   const [inputValues, setInputValues] = useState<InputValues>({
@@ -73,48 +85,49 @@ export const Form: FC = () => {
   });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, id } = event.target;
+    const { value, name } = event.target;
 
-    setInputValues({ ...inputValues, [id]: value });
+    setInputValues({ ...inputValues, [name]: value });
   };
 
+  // @todo: useCallback
   const validateInput = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, id } = event.target;
+    const { value, name } = event.target;
 
     setInvalidInputInformation({
       ...invalidInputInformation,
-      [id]: '',
+      [name]: '',
     });
 
-    if (!validateIsNotEmpty(value)) {
+    // if (!validateIsNotEmpty(value)) {
+    //   setInvalidInputInformation({
+    //     ...invalidInputInformation,
+    //     [name]: WARNING_TEXTS.isEmpty,
+    //   });
+    //   return;
+    // }
+
+    // if (name === 'name' && !validateIsName(value)) {
+    //   setInvalidInputInformation({
+    //     ...invalidInputInformation,
+    //     [name]: WARNING_TEXTS.isNoName,
+    //   });
+    //   return;
+    // }
+
+    if (name === 'email' && !validateIsEmail(value)) {
       setInvalidInputInformation({
         ...invalidInputInformation,
-        [id]: WARNING_TEXTS.isEmpty,
+        [name]: WARNING_TEXTS.isNoEmail,
       });
       return;
     }
 
-    if (id === 'name' && !validateIsName(value)) {
-      setInvalidInputInformation({
-        ...invalidInputInformation,
-        [id]: WARNING_TEXTS.isNoName,
-      });
-      return;
-    }
-
-    if (id === 'email' && !validateIsEmail(value)) {
-      setInvalidInputInformation({
-        ...invalidInputInformation,
-        [id]: WARNING_TEXTS.isNoEmail,
-      });
-      return;
-    }
-
-    if (id === 'password') {
+    if (name === 'password') {
       if (!validateHasCapitalLetter(value)) {
         setInvalidInputInformation({
           ...invalidInputInformation,
-          [id]: WARNING_TEXTS.hasNoCapitalLetters,
+          [name]: WARNING_TEXTS.hasNoCapitalLetters,
         });
         return;
       }
@@ -122,7 +135,7 @@ export const Form: FC = () => {
       if (!validateHasLowerCaseLetter(value)) {
         setInvalidInputInformation({
           ...invalidInputInformation,
-          [id]: WARNING_TEXTS.hasNoLowerCaseLetters,
+          [name]: WARNING_TEXTS.hasNoLowerCaseLetters,
         });
         return;
       }
@@ -131,7 +144,7 @@ export const Form: FC = () => {
     if (!validateHasNumber(value)) {
       setInvalidInputInformation({
         ...invalidInputInformation,
-        [id]: WARNING_TEXTS.hasNoNumber,
+        [name]: WARNING_TEXTS.hasNoNumber,
       });
       return;
     }
@@ -139,10 +152,12 @@ export const Form: FC = () => {
     if (!validateIsLongEnough(value)) {
       setInvalidInputInformation({
         ...invalidInputInformation,
-        [id]: WARNING_TEXTS.isTooShort,
+        [name]: WARNING_TEXTS.isTooShort,
       });
     }
   };
+
+  const nameValidation = useFieldValidation(nameValidationRules);
 
   return (
     <div>
@@ -157,23 +172,24 @@ export const Form: FC = () => {
         </i>
       </StyledSubHeadline>
       <StyledForm onSubmit={handleSubmit}>
-        <StyledLabel hasNonValidInput={Boolean(invalidInputInformation.name)}>
+        <StyledLabel hasNonValidInput={!nameValidation.isValid}>
           Name
           <StyledInput
             type="text"
-            id="name"
+            name="name"
             placeholder={PLACEHOLDER_TEXTS.name}
-            value={inputValues.name}
-            onChange={handleChange}
-            onBlur={validateInput}
+            onChange={nameValidation.handleChange}
+            onBlur={nameValidation.handleBlur}
           />
-          <StyledWarningText>{invalidInputInformation.name}</StyledWarningText>
+          <StyledWarningText>
+            {nameValidation.validationMessage}
+          </StyledWarningText>
         </StyledLabel>
         <StyledLabel>
           E-Mail
           <StyledInput
             type="email"
-            id="email"
+            name="email"
             placeholder={PLACEHOLDER_TEXTS.email}
             value={inputValues.email}
             onChange={handleChange}
@@ -185,7 +201,7 @@ export const Form: FC = () => {
           Passwort
           <StyledInput
             type="password"
-            id="password"
+            name="password"
             placeholder={PLACEHOLDER_TEXTS.password}
             value={inputValues.password}
             onChange={handleChange}
@@ -194,11 +210,12 @@ export const Form: FC = () => {
           <StyledWarningText>
             {invalidInputInformation.password}
           </StyledWarningText>
+          <StyledCentering>
+            // @todo: grey out until all input fields ready
+            <StyledButton type="submit">Speichern</StyledButton>
+          </StyledCentering>
         </StyledLabel>
       </StyledForm>
-      <StyledCentering>
-        <StyledButton onClick={handleSubmit}>Speichern</StyledButton>
-      </StyledCentering>
     </div>
   );
 };

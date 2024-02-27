@@ -18,16 +18,13 @@ export const StyledForm = styled.form`
 `;
 
 export const StyledLabel = styled.label<StyledLabelProps>`
-  --has-non-valid-input: ${({ hasNonValidInput }) =>
-    hasNonValidInput ? 1 : 0};
+  --foo: ${({ hasNonValidInput }) => (hasNonValidInput ? 'red' : 'inherit')};
 
-  /* color: var(--has-non-valid-input) ? 'red' : 'inherit'; */
+  color: var(--foo);
 
   margin-top: 1rem;
   padding-inline: 15px;
   max-width: 100%;
-
-  color: ${({ hasNonValidInput }) => (hasNonValidInput ? 'red' : 'inherit')};
 
   @media (min-width: 576px) {
     /* flex: 0 0 50%; */
@@ -36,6 +33,9 @@ export const StyledLabel = styled.label<StyledLabelProps>`
 `;
 
 export const StyledInput = styled.input`
+  outline-color: var(--foo);
+  border-color: var(--foo);
+  color: var(--foo);
   width: 100%;
 `;
 
