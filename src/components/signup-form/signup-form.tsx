@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { FC, FormEvent } from 'react';
 
 import {
@@ -43,14 +42,14 @@ export const WARNING_TEXTS = {
 };
 
 const ruleIsNotEmpty = {
-  validateInput: (input: string) => input?.trim() !== '',
+  checkIsInputValid: (input: string) => input?.trim() !== '',
   validationMessage: WARNING_TEXTS.isEmpty,
 };
 
 const nameValidationRules: TFieldValidationRule[] = [
   ruleIsNotEmpty,
   {
-    validateInput: (input: string) => Boolean(input.match(/^[ A-Za-z]+$/)),
+    checkIsInputValid: (input: string) => Boolean(input.match(/^[ A-Za-z]+$/)),
     validationMessage: WARNING_TEXTS.isNoName,
   },
 ];
@@ -58,7 +57,7 @@ const nameValidationRules: TFieldValidationRule[] = [
 const emailValidationRules: TFieldValidationRule[] = [
   ruleIsNotEmpty,
   {
-    validateInput: (input: string) =>
+    checkIsInputValid: (input: string) =>
       Boolean(input.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)),
     validationMessage: WARNING_TEXTS.isNoEmail,
   },
@@ -67,24 +66,25 @@ const emailValidationRules: TFieldValidationRule[] = [
 const passwordValidationRules: TFieldValidationRule[] = [
   ruleIsNotEmpty,
   {
-    validateInput: (input: string) => Boolean(input.match(/[A-Z]/)),
+    checkIsInputValid: (input: string) => Boolean(input.match(/[A-Z]/)),
     validationMessage: WARNING_TEXTS.hasNoCapitalLetter,
   },
   {
-    validateInput: (input: string) => Boolean(input.match(/[a-z]/)),
+    checkIsInputValid: (input: string) => Boolean(input.match(/[a-z]/)),
     validationMessage: WARNING_TEXTS.hasNoLowerCaseLetter,
   },
   {
-    validateInput: (input: string) => Boolean(input.match(/\d/)),
+    checkIsInputValid: (input: string) => Boolean(input.match(/\d/)),
     validationMessage: WARNING_TEXTS.hasNoNumber,
   },
   {
-    validateInput: (input: string) => input.length > 8,
+    checkIsInputValid: (input: string) => input.length > 8,
     validationMessage: WARNING_TEXTS.isTooShort,
   },
 ];
 
 const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  // eslint-disable-next-line no-console
   console.log(event);
 };
 
@@ -97,24 +97,24 @@ export const Form: FC = () => {
     <div>
       <StyledHeadline>Jetzt JobRad-Fachhandelspartner werden!</StyledHeadline>
       <StyledSubHeadline>
-        {/* @todo */}
         <i>
-          <b>JobRad</b>
+          <b>JobRad </b>
           und
-          <b>JobRad für Selbstständige</b>
+          <b> JobRad für Selbstständige </b>
           anbieten - ohne Abnahmeverpflichtung.
         </i>
       </StyledSubHeadline>
-      {/* triggerd browser form submission */}
+      {/* trigger browser form submission */}
       <StyledForm onSubmit={handleSubmit}>
         <StyledLabel isInputValid={nameValidation.isValid}>
           Name
           <StyledInput
-            type="text"
+            isInputValid={nameValidation.isValid}
             name="name"
-            placeholder={PLACEHOLDER_TEXTS.name}
-            onChange={nameValidation.handleChange}
             onBlur={nameValidation.handleBlur}
+            onChange={nameValidation.handleChange}
+            placeholder={PLACEHOLDER_TEXTS.name}
+            type="text"
           />
           <StyledWarningText>
             {nameValidation.validationMessage}
@@ -123,11 +123,12 @@ export const Form: FC = () => {
         <StyledLabel isInputValid={emailValidation.isValid}>
           E-Mail
           <StyledInput
-            type="email"
+            isInputValid={emailValidation.isValid}
             name="email"
-            placeholder={PLACEHOLDER_TEXTS.email}
-            onChange={emailValidation.handleChange}
             onBlur={emailValidation.handleBlur}
+            onChange={emailValidation.handleChange}
+            placeholder={PLACEHOLDER_TEXTS.email}
+            type="email"
           />
           <StyledWarningText>
             {emailValidation.validationMessage}
@@ -136,20 +137,32 @@ export const Form: FC = () => {
         <StyledLabel isInputValid={passwordValidation.isValid}>
           Passwort
           <StyledInput
-            type="password"
+            isInputValid={passwordValidation.isValid}
             name="password"
-            placeholder={PLACEHOLDER_TEXTS.password}
-            onChange={passwordValidation.handleChange}
             onBlur={passwordValidation.handleBlur}
+            onChange={passwordValidation.handleChange}
+            placeholder={PLACEHOLDER_TEXTS.password}
+            type="password"
           />
           <StyledWarningText>
             {passwordValidation.validationMessage}
           </StyledWarningText>
-          <StyledCentering>
-            {/* @todo: grey out until all input fields ready */}
-            <StyledButton type="submit">Speichern</StyledButton>
-          </StyledCentering>
         </StyledLabel>
+        <StyledCentering>
+          {/* @todo: disable until all input fields ready */}
+          <StyledButton
+            disabled={
+              !(
+                nameValidation.isValid &&
+                emailValidation.isValid &&
+                passwordValidation.isValid
+              )
+            }
+            type="submit"
+          >
+            Speichern
+          </StyledButton>
+        </StyledCentering>
       </StyledForm>
     </div>
   );

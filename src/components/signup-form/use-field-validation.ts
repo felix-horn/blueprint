@@ -7,11 +7,11 @@ import {
 } from 'react';
 
 export type TFieldValidationRule = {
-  validateInput: (input: string) => boolean;
+  checkIsInputValid: (input: string) => boolean;
   validationMessage: string;
 };
 
-export type TFieldValidation = {
+export type TFieldValidationHook = {
   handleBlur: FocusEventHandler<HTMLInputElement>;
   handleChange: ChangeEventHandler<HTMLInputElement>;
   isValid: boolean;
@@ -20,8 +20,14 @@ export type TFieldValidation = {
 
 export const useFieldValidation = (
   rules: TFieldValidationRule[],
-): TFieldValidation => {
+): TFieldValidationHook => {
   const [isValid, setIsValid] = useState(true);
+
+  // On entering a field the first time, an error message only appears
+  // when leaving the field with an unvalid input.
+  // However, after re-entering an input field,
+  // the error massage stays visible until the input is valid.
+  const [wasNotValid, setWasNotValid] = useState(false);
 
   const [validationMessage, setValidationMessage] = useState<string | null>(
     null,
@@ -35,14 +41,15 @@ export const useFieldValidation = (
       setValidationMessage(null);
 
       for (const {
-        validateInput,
-        validationMessage: singleValidationMessage,
+        checkIsInputValid,
+        validationMessage: _validationMessage,
       } of rules) {
-        const isSingleRuleValid = validateInput(value);
+        const isSingleRuleValid = checkIsInputValid(value);
 
         if (!isSingleRuleValid) {
           setIsValid(false);
-          setValidationMessage(singleValidationMessage);
+          setValidationMessage(_validationMessage);
+          setWasNotValid(true);
           break;
         }
       }
@@ -50,22 +57,30 @@ export const useFieldValidation = (
     [rules],
   );
 
+  //
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (event) => {
       const { value } = event.target;
 
-      setIsValid(true);
+      for (const {
+        checkIsInputValid,
+        validationMessage: iteratedValidationMessage,
+      } of rules) {
+        const isIteratedRuleValid = checkIsInputValid(value);
 
-      for (const { validateInput } of rules) {
-        const isSingleRuleValid = validateInput(value);
+        if (isIteratedRuleValid) {
+          setIsValid(true);
+          setValidationMessage(null);
+        }
 
-        if (!isSingleRuleValid) {
+        if (!isIteratedRuleValid && wasNotValid) {
           setIsValid(false);
+          setValidationMessage(iteratedValidationMessage);
           break;
         }
       }
     },
-    [rules],
+    [rules, wasNotValid],
   );
 
   return useMemo(
