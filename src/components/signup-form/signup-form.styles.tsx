@@ -1,7 +1,7 @@
 import { styled } from 'styled-components';
 
 export type StyledLabelProps = {
-  hasNonValidInput?: boolean;
+  isInputValid?: boolean;
 };
 
 export const StyledHeadline = styled.h2`
@@ -18,7 +18,7 @@ export const StyledForm = styled.form`
 `;
 
 export const StyledLabel = styled.label<StyledLabelProps>`
-  --foo: ${({ hasNonValidInput }) => (hasNonValidInput ? 'red' : 'inherit')};
+  --foo: ${({ isInputValid }) => (isInputValid ? 'inhertit' : 'red')};
 
   color: var(--foo);
 
